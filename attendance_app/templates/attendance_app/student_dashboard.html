@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Attendance Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-2">
+                <i class="bi bi-graph-up"></i> Dashboard
+            </h2>
+            <p class="text-muted">Welcome, {{ student.user.first_name }}!</p>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-left-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Enrolled Courses</h5>
+                    <h2 class="mb-0">{{ courses.count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-left-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Classes</h5>
+                    <h2 class="mb-0">{{ total_classes }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-left-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Overall Attendance</h5>
+                    <h2 class="mb-0">
+                        {% if overall_percentage is not None %}
+                            {{ overall_percentage }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Details -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-calendar-check"></i> Your Attendance
+                    </h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Total Classes</th>
+                                <th>Present</th>
+                                <th>Attendance %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in attendance_data %}
+                            <tr>
+                                <td>
+                                    <strong>{{ data.course.code }}</strong>
+                                </td>
+                                <td>{{ data.course.name }}</td>
+                                <td>{{ data.total }}</td>
+                                <td>{{ data.present }}</td>
+                                <td>
+                                    <span class="badge bg-{% if data.percentage >= 75 %}success{% elif data.percentage >= 50 %}warning{% else %}danger{% endif %}">
+                                        {{ data.percentage }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    No attendance records yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 4px solid #1f4788;
+    }
+    .border-left-success {
+        border-left: 4px solid #28a745;
+    }
+    .border-left-warning {
+        border-left: 4px solid #ffc107;
+    }
+</style>
+{% endblock %}

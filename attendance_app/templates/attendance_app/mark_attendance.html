@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Attendance - {{ course.code }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <a href="{% url 'instructor_dashboard' %}" class="btn btn-outline-secondary mb-3">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <h2 class="mb-2">
+                <i class="bi bi-calendar-check"></i> Mark Attendance
+            </h2>
+            <p class="text-muted">Course: <strong>{{ course.code }} - {{ course.name }}</strong></p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Date & Student List</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="attendanceForm">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="attendance_date" class="form-label">Attendance Date</label>
+                                <input type="date" id="attendance_date" name="attendance_date" class="form-control" value="{{ attendance_date|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Enrollment No.</th>
+                                        <th>Student Name</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in attendance_rows %}
+                                    <tr>
+                                        <td><strong>{{ row.student.enrollment_number }}</strong></td>
+                                        <td>{{ row.student.user.get_full_name }}</td>
+                                        <td>
+                                            <select name="status_{{ row.student.id }}" class="form-select form-select-sm">
+                                                <option value="P" {% if row.status == 'P' %}selected{% endif %}>Present</option>
+                                                <option value="A" {% if row.status == 'A' %}selected{% endif %}>Absent</option>
+                                                <option value="L" {% if row.status == 'L' %}selected{% endif %}>Late</option>
+                                                <option value="EX" {% if row.status == 'EX' %}selected{% endif %}>Excused</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="remarks_{{ row.student.id }}" class="form-control form-control-sm" value="{{ row.remarks }}" placeholder="Optional remarks">
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">
+                                            No students found for this course.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Mark Attendance
+                            </button>
+                            <a href="{% url 'instructor_dashboard' %}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

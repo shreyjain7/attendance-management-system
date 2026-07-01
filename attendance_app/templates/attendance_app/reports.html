@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-2">
+                <i class="bi bi-file-earmark-pdf"></i> Attendance Reports
+            </h2>
+            <p class="text-muted">Generate and view attendance reports</p>
+        </div>
+    </div>
+    
+    <!-- Filter Form -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            {{ form.course }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.department }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.semester }}
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reports Table -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Total Classes</th>
+                                <th>Present</th>
+                                <th>Absent</th>
+                                <th>Late</th>
+                                <th>Attendance %</th>
+                                <th>Generated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                            <tr>
+                                <td><strong>{{ report.student.enrollment_number }}</strong></td>
+                                <td>{{ report.course.code }}</td>
+                                <td>{{ report.total_classes }}</td>
+                                <td>{{ report.present_count }}</td>
+                                <td>{{ report.absent_count }}</td>
+                                <td>{{ report.late_count }}</td>
+                                <td>
+                                    <span class="badge bg-{% if report.attendance_percentage >= 75 %}success{% elif report.attendance_percentage >= 50 %}warning{% else %}danger{% endif %}">
+                                        {{ report.attendance_percentage|floatformat:2 }}%
+                                    </span>
+                                </td>
+                                <td>{{ report.generated_at|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">
+                                    No reports found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
